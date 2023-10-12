@@ -1,100 +1,129 @@
 import React, { Component } from 'react';
 import { Searchbar } from './Searchbar/Searchbar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
-import { ImageGalleryItem } from './ImageGalleryItem/ImageGalleryItem';
-import { getGalleryItems } from './api/api';
+import { Modal } from './Modal/Modal';
+import { fetchAllImagesByQuery, fetchImages } from '../services/api.js';
 import { Button } from './Button/Button';
 import { Loader } from './Loader/Loader';
-import { Modal } from './Modal/Modal';
 
 export class App extends Component {
   state = {
-    searchValue: '',
+    query: '',
+    images: [],
     page: 1,
-    hits: null,
-    isLoader: false,
-    isLoadBtn: false,
-    showModal: false,
-    modalImage: '',
-    tags: '',
+    isModalOpen: false,
+    isLoading: false,
+    error: null,
+    loadMore: true,
+    totalPages: 1,
+    activeImage: null,
+  };
+
+  fetchAllImages = async () => {
+    try {
+      this.setState({
+        isLoading: true,
+      });
+      const images = await fetchImages(this.state.query, this.state.page);
+      this.setState(prevState => {
+        return {
+          images: prevState.images.concat(images.hits),
+          loadMore: this.state.page < this.state.totalPages,
+        };
+      });
+    } catch (error) {
+      this.setState({ error: error.message });
+    } finally {
+      this.setState({
+        isLoading: false,
+      });
+    }
+  };
+
+  totalPageCount = async () => {
+    try {
+      this.setState({
+        isLoading: true,
+      });
+      const images = await fetchAllImagesByQuery(this.state.query);
+      this.setState({ totalPages: Math.ceil(images.totalHits / 12) });
+    } catch (error) {
+      this.setState({ error: error.message });
+    } finally {
+      this.setState({
+        isLoading: false,
+      });
+    }
+  };
+
+  ClickHandler = () => {
+    this.setState(prevState => {
+      return {
+        page: prevState.page + 1,
+      };
+    });
+  };
+
+  handleSubmit = evt => {
+    evt.preventDefault();
+    const form = evt.currentTarget;
+    const search = form.elements.search.value;
+    console.log(search);
+    this.setState({ query: search, page: 1, images: [] });
+    this.totalPageCount();
+  };
+
+  openModal = selectedImage => {
+    this.setState({ activeImage: selectedImage, isModalOpen: true });
+  };
+
+  closeModal = () => {
+    this.setState({ activeImage: null, isModalOpen: false });
+  };
+
+  componentDidMount = () => {
+    this.state.query ?? this.fetchAllImages();
   };
 
   componentDidUpdate(_, prevState) {
-    const { searchValue, page } = this.state;
-
-    if (searchValue !== prevState.searchValue || page !== prevState.page) {
-      this.setState({ isLoader: true });
-
-      getGalleryItems(searchValue, page)
-        .then(data => {
-          if (!data.totalHits) {
-            alert(`"${searchValue}" not found. Please enter something else.`);
-            return;
-          }
-
-          const lastPage = Math.ceil(data.totalHits / 12);
-
-          if (page === lastPage) {
-            this.setState({ isLoadBtn: true });
-            alert('Thats all images');
-          }
-
-          this.setState(prev => ({ hits: [...prev.hits, ...data.hits] }));
-        })
-        .catch(error => {
-          console.log(error);
-          return alert('Something went wrong. Please try again later.');
-        })
-        .finally(() => {
-          this.setState({ isLoader: false });
-        });
+    if (
+      this.state.page !== prevState.page ||
+      this.state.query !== prevState.query
+    ) {
+      this.fetchAllImages();
     }
   }
 
-  handleSubmit = searchValue => {
-    this.setState({ searchValue, page: 1, hits: [], isLoadBtn: false });
-  };
-
-  handleLoadMore = () => {
-    this.setState(prev => ({ page: prev.page + 1 }));
-  };
-
-  toggleModal = () => {
-    this.setState(prev => ({ showModal: !prev.showModal }));
-  };
-
-  handleImageClick = (largeImageURL, tags) => {
-    this.setState({ modalImage: largeImageURL, tags });
-    this.toggleModal();
+  handleImageClick = image => {
+    this.setState({ activeImage: image, showModal: true });
+    document.body.style.overflow = 'hidden';
   };
 
   render() {
-    const { hits, isLoader, isLoadBtn, showModal, modalImage, tags } =
-      this.state;
-    const showLoadBtn = hits && hits.length > 0 && !isLoadBtn;
     return (
-      <>
+      <div>
         <Searchbar onSubmit={this.handleSubmit} />
-
-        {isLoader && <Loader />}
-
-        {hits && (
-          <ImageGallery>
-            <ImageGalleryItem
-              images={hits}
-              onImageClick={this.handleImageClick}
+        {this.state.isLoading && <Loader />}
+        {this.state.query && (
+          <>
+            <ImageGallery
+              images={this.state.images}
+              onImageClick={this.openModal}
             />
-          </ImageGallery>
+            {this.state.loadMore ? (
+              <Button handleClick={this.ClickHandler} />
+            ) : (
+              <></>
+            )}
+          </>
         )}
-
-        {showLoadBtn && <Button onBtnClick={() => this.handleLoadMore()} />}
-
-        {showModal && (
-          <Modal onClose={this.toggleModal}>
-            <img src={modalImage} alt={tags} />
-          </Modal>
+        {this.state.isModalOpen && (
+          <Modal
+            image={this.state.activeImage}
+            onCloseModal={this.closeModal}
+          />
         )}
-      </>
+      </div>
     );
   }
 }

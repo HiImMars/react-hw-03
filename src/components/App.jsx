@@ -21,10 +21,6 @@ export class App extends Component {
     activeImage: null,
   };
 
-  componentDidMount = () => {
-    this.state.query ?? this.fetchAllImages();
-  };
-
   async componentDidUpdate(_, prevState) {
     if (
       this.state.page !== prevState.page ||
@@ -71,11 +67,6 @@ export class App extends Component {
 
   closeModal = () => {
     this.setState({ activeImage: null, isModalOpen: false });
-  };
-
-  handleImageClick = image => {
-    this.setState({ activeImage: image, showModal: true });
-    document.body.style.overflow = 'hidden';
   };
 
   render() {

@@ -1,13 +1,14 @@
 {
   "files": {
-    "main.css": "/react-hw-03/static/css/main.0e2bad87.css",
-    "main.js": "/react-hw-03/static/js/main.d4b5d9fb.js",
+    "main.css": "/react-hw-03/static/css/main.fc3dd395.css",
+    "main.js": "/react-hw-03/static/js/main.a8401009.js",
+    "static/media/loupe.png": "/react-hw-03/static/media/loupe.c6544d3156a8bde3d076.png",
     "index.html": "/react-hw-03/index.html",
-    "main.0e2bad87.css.map": "/react-hw-03/static/css/main.0e2bad87.css.map",
-    "main.d4b5d9fb.js.map": "/react-hw-03/static/js/main.d4b5d9fb.js.map"
+    "main.fc3dd395.css.map": "/react-hw-03/static/css/main.fc3dd395.css.map",
+    "main.a8401009.js.map": "/react-hw-03/static/js/main.a8401009.js.map"
   },
   "entrypoints": [
-    "static/css/main.0e2bad87.css",
-    "static/js/main.d4b5d9fb.js"
+    "static/css/main.fc3dd395.css",
+    "static/js/main.a8401009.js"
   ]
 }

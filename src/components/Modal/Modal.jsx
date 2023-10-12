@@ -1,9 +1,5 @@
-// export const Modal = () => {
-//   return <div> Modal</div>;
-// };
 import css from './Modal.module.css';
 import React, { Component } from 'react';
-// import { Overlay, ModalDiv } from './styledComponents/Modal';
 
 export class Modal extends Component {
   componentDidMount() {

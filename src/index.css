@@ -52,3 +52,7 @@ img {
 li {
   list-style: none;
 }
+
+.wrapper {
+  margin-bottom: 40px;
+}

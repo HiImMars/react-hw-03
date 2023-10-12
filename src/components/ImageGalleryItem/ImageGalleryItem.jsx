@@ -1,5 +1,5 @@
 import css from './ImageGalleryItem.module.css';
-// id, webformatURL, alt
+
 export const ImageGalleryItem = ({ image, onClick }) => {
   return (
     <li key={image.id} className={css.ImageGalleryItem}>

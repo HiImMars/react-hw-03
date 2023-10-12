@@ -10,20 +10,8 @@ export const ImageGallery = ({ images, onImageClick }) => {
     <ul className={css.ImageGallery}>
       {images.map(img => {
         return (
-          <ImageGalleryItem
-            key={img.id}
-            image={img}
-            // id={img.id}
-            // webformatURL={img.webformatURL}
-            // alt={img.tags}
-            onClick={onImageClick}
-          />
+          <ImageGalleryItem key={img.id} image={img} onClick={onImageClick} />
         );
-        // return (
-        //   <li key={img.id}>
-        //     <img src={img.webformatURL} alt={img.tags} />
-        //   </li>
-        // );
       })}
     </ul>
   );
